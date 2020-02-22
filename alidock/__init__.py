@@ -131,17 +131,25 @@ class AliDock(object):
             xForward = ["-oForwardX11Trusted=no", "-Y", "-oForwardX11Timeout=596h"]
 
         logLevel = "-oLogLevel=" + ("DEBUG" if self.conf["debug"] else "QUIET")
+        
 
-        return ["ssh", "localhost", "-p", str(sshPort), "-F/dev/null", "-l", self.userName,
-                "-oUserKnownHostsFile=/dev/null", logLevel, "-oStrictHostKeyChecking=no",
-                "-oIdentitiesOnly=yes", "-i", privKey] + sshControl + xForward
+        if platform.system() != "Windows":
+            return ["ssh", "localhost", "-p", str(sshPort), "-F/dev/null", "-l", self.userName,
+                    "-oUserKnownHostsFile=/dev/null", logLevel, "-oStrictHostKeyChecking=no",
+                    "-oIdentitiesOnly=yes", "-i", privKey] + sshControl + xForward
+        else:
+            system32 = os.path.join(os.environ['SystemRoot'], 'SysNative' if platform.architecture()[0] == '32bit' else 'System32')
+            sshPath = os.path.join(system32, 'OpenSSH/ssh.exe')
+            return [sshPath, "localhost", "-p", str(sshPort), "-F/dev/null", "-l", self.userName,
+                    "-oUserKnownHostsFile=/dev/null", logLevel, "-oStrictHostKeyChecking=no",
+                    "-oIdentitiesOnly=yes", "-i", privKey] + sshControl + xForward
 
     def waitSshUp(self):
         for _ in range(0, 50):
             try:
                 nul = open(os.devnull, "w")
                 subprocess.check_call(self.getSshCommand() + ["-T", "/bin/true"],
-                                      stdout=nul, stderr=nul)
+                                      stdout=nul, stderr=nul, shell=True)
             except subprocess.CalledProcessError:
                 sleep(0.5)
             else:

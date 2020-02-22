@@ -82,7 +82,7 @@ if platform.system() == "Windows":
     def execReturn(_, args):
         """Executes the given program on Windows (no process substitution) and exits with the
         appropriate status code."""
-        ret = call(args)
+        ret = call(args, shell=True)
         if ret < 0:  # fatal signal
             ret = 128 + ret
         sys.exit(ret)
