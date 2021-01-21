@@ -53,7 +53,7 @@ class AliDock(object):
         return {
             "dockName"          : "alidock",
             "imageName"         : "alipier/alidock:latest",
-            "dirOutside"        : os.path.join("~", "alidock"),
+            "dirOutside"        : os.path.join("~", "Wonderland/alidock"),
             "updatePeriod"      : 43200,
             "dontUpdateImage"   : False,
             "dontUpdateAlidock" : False,
